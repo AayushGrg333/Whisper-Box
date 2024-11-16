@@ -1,3 +1,8 @@
+
+## Whisper-Box
+
+Whisper-Box is a full-stack, anonymous message-sending application. Inspired by popular Q&A links on social media, Whisper-Box allows users to receive anonymous messages, empowering honest feedback, fun interactions, and engaging conversations.
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
