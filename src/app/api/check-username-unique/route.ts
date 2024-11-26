@@ -2,7 +2,6 @@ import connectDb from "@/lib/connnectdb";
 import User from "@/models/user";
 import {z} from "zod";
 import { usernameValidation } from "@/schemas/signUpSchema";
-import { messageSchema } from "@/schemas/messageSchema";
 
 const UsernameQuerySchema = z.object({
     username: usernameValidation
@@ -10,6 +9,7 @@ const UsernameQuerySchema = z.object({
 
 export async function GET(request:Request) {
     await connectDb()
+    try {
         const { searchParams } = new URL(request.url);
         const queryParam = {
             username: searchParams.get("username")
@@ -20,7 +20,7 @@ export async function GET(request:Request) {
             const usernameErrors = result.error.format().username?._errors || []
             return Response.json({
                 success: false,
-                message: 'Invalid query parameter'
+                message: 'Invalid query parameter',usernameErrors
             },{
                 status: 400
             })
@@ -44,9 +44,6 @@ export async function GET(request:Request) {
         })
 
 
-
-    try {
-        
     } catch (error) {
         console.error("Error checking username",error);
         return Response.json({

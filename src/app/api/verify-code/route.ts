@@ -1,15 +1,27 @@
 import connectDb from "@/lib/connnectdb";
 import User from "@/models/user";
-import {z} from "zod";
-import { usernameValidation } from "@/schemas/signUpSchema";
-import { messageSchema } from "@/schemas/messageSchema";
+import { verifySchema } from "@/schemas/verifySchema";
 
 export async function POST(request:Request) {
     await connectDb();
     try {
         const {username, code} = await request.json();
         const decodedUsername = decodeURIComponent(username)
-        const user = await User.findOne({username: decodedUsername})
+
+        //validate with zod
+        const validationResult = verifySchema.safeParse(code);
+
+        if(!validationResult.success){
+            const errors = validationResult.error.format()._errors || [];
+            return Response.json({
+                    success: false,
+                    message: "Validation failed",
+                    errors,
+                }),
+                { status: 400 }
+        }
+
+        const user = await User.findOne({username: decodedUsername, verifyCode:code})
         if(!user){
             return  Response.json({
                 success: false,
