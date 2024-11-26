@@ -65,14 +65,14 @@ export async function POST(request: Request) {
 
                 return Response.json(
                     {
-                        success: false,
+                        success: true,
                         message:
                             "User Registered Successfully. Please verify your email",
                     },
                     { status: 201 }
                 );
             }
-        } else {    
+        } else {
             // case 3 : New user registration
             const hashedPassword = await bcrypt.hash(password, 10);
             const expiryDate = new Date();
@@ -111,7 +111,7 @@ export async function POST(request: Request) {
 
         return Response.json(
             {
-                success: false,
+                success: true,
                 message:
                     "User Registered Successfully. Please verify your email",
             },
