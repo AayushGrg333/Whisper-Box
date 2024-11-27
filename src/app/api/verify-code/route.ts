@@ -1,5 +1,5 @@
 import connectDb from "@/lib/connnectdb";
-import User from "@/models/user";
+import userModel from "@/models/user";
 import { verifySchema } from "@/schemas/verifySchema";
 
 export async function POST(request:Request) {
@@ -21,7 +21,7 @@ export async function POST(request:Request) {
                 { status: 400 }
         }
 
-        const user = await User.findOne({username: decodedUsername, verifyCode:code})
+        const user = await userModel.findOne({username: decodedUsername, verifyCode:code})
         if(!user){
             return  Response.json({
                 success: false,

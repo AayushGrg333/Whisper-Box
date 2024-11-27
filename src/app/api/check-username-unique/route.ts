@@ -1,5 +1,5 @@
 import connectDb from "@/lib/connnectdb";
-import User from "@/models/user";
+import userModel from "@/models/user";
 import {z} from "zod";
 import { usernameValidation } from "@/schemas/signUpSchema";
 
@@ -26,7 +26,7 @@ export async function GET(request:Request) {
             })
         }
         const { username } = result.data
-        const existingVerifiedUser = await User.findOne({username , isVerified: true})
+        const existingVerifiedUser = await userModel.findOne({username , isVerified: true})
         if(!existingVerifiedUser){
             return  Response.json({
                 success: false,
