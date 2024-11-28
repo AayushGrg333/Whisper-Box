@@ -9,8 +9,10 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.21.0",
     "@react-email/components": "^0.0.28",
     "bcrypt": "^5.1.1",
+    "dotenv": "^16.4.5",
     "mongoose": "^8.8.1",
     "next": "15.0.3",
     "next-auth": "^4.24.10",
