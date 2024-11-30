@@ -5,11 +5,10 @@ import { Message } from '@/models/user';
 
 export async function POST(request:Request) {
     await connectDb();
-
-    const {username , content} = await request.json();
-
+    const { username , content } = await request.json();
     try {
-        const user = await userModel.findOne({username})
+        const user = await userModel.findOne({username});
+        
         if (!user) {
             return Response.json(
                 {
