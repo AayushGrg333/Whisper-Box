@@ -1,9 +1,9 @@
-'use client'
-import React from "react"
+import React from 'react'
 
-
-const SignIn: React.FC = function (){
+function Signin() {
   return (
-    <div></div>
+    <div>Signin</div>
   )
 }
+
+export default Signin
