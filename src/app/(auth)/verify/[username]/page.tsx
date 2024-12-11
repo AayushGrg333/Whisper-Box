@@ -1,5 +1,6 @@
+'use client'
 import { Button } from "@/components/ui/button";
-import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { verifySchema } from "@/schemas/verifySchema";
@@ -8,7 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import axios, { AxiosError } from "axios";
 import { useParams, useRouter } from "next/navigation";
 import React from "react";
-import { Form, useForm } from "react-hook-form";
+import {  useForm } from "react-hook-form";
 import { z } from "zod";
 
 function VerifyAccount() {
@@ -65,15 +66,13 @@ function VerifyAccount() {
                     >
                         <FormField
                             control={form.control}
-                            name="code"
+                            name="verificationCode"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Username</FormLabel>
+                                    <FormLabel>Verification Code</FormLabel>
                                     <FormControl>
                                         <Input
-                                            placeholder="shadcn"
-                                            {...field}
-                                        />
+                                            placeholder="code" {...field}/>
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
