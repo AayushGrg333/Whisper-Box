@@ -1,75 +1,65 @@
 import connectDb from "@/lib/connnectdb";
 import userModel from "@/models/user";
-import { verifySchema } from "@/schemas/verifySchema";
 
-export async function POST(request:Request) {
-    await connectDb();
-    try {
-        const {username, code} = await request.json();
-        const decodedUsername = decodeURIComponent(username)
+export async function POST(request: Request) {
+  await connectDb();
+  try {
+    const { username, code } = await request.json();
 
-        //validate with zod
-        const validationResult = verifySchema.safeParse(code);
+    const decodedUsername = decodeURIComponent(username);
+    const user = await userModel.findOne({
+      username: decodedUsername,
+    });
 
-        if(!validationResult.success){
-            const errors = validationResult.error.format()._errors || [];
-            return Response.json({
-                    success: false,
-                    message: "Validation failed",
-                    errors,
-                }),
-                { status: 400 }
-        }
-
-        const user = await userModel.findOne({username: decodedUsername, verifyCode:code})
-        if(!user){
-            return  Response.json({
-                success: false,
-                message: 'User not found'
-            },{
-                status: 400
-            })
-        }
-
-        const iscodeValid = user.verifyCode === code
-        const isCodeNotExpired = new Date(user.verifyCodeExpiry) > new Date();
-
-        if(iscodeValid && isCodeNotExpired){
-            user.isVerified = true;
-            await user.save();
-
-            return Response.json(
-                {
-                    success: true,
-                    message: "Account Verified successfully"
-                },
-                {status: 200}
-            )
-
-        } else if(!isCodeNotExpired){
-            return  Response.json({
-                success: false,
-                message: 'session expired please signup again to get a new code'
-            },{
-                status: 400
-            })
-        } else{
-            return  Response.json({
-                success: false,
-                message: 'Incorrect verification code'
-            },{
-                status: 400
-            })
-        }
-
-
-    } catch (error) {
-        console.error("Error checking username",error);
-        return  Response.json({
-            success: false,
-            message: 'Username is already taken'
-        },{
-            status: 400
-        })
+    if (!user) {
+      return Response.json(
+        {
+          success: false,
+          message: "User does not exists",
+        },
+        { status: 400 }
+      );
     }
+
+    const isValidCode = user.verifyCode === code;
+    const isCodeNotExpired = new Date(user.verifyCodeExpiry) > new Date();
+
+    if (isValidCode && isCodeNotExpired) {
+      user.isVerified = true;
+      await user.save();
+      return Response.json(
+        {
+          success: true,
+          message: "User verified successful",
+        },
+        { status: 200 }
+      );
+    } else if (!isCodeNotExpired) {
+      return Response.json(
+        {
+          success: false,
+          message:
+            "Verification code has expired please sign up again to generate new code!",
+        },
+        { status: 400 }
+      );
+    } else {
+      return Response.json(
+        {
+          success: false,
+          message: "Verification code is incorrect",
+        },
+        { status: 400 }
+      );
+    }
+  } catch (error) {
+    console.error("Error verifying user", error);
+    return Response.json(
+      {
+        success: false,
+        message: "Error verifying user",
+      },
+      { status: 500 }
+    );
+  }
 }

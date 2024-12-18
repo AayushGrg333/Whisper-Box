@@ -21,8 +21,8 @@ export async function middleware(request: NextRequest) {
 
     // Redirect unauthenticated users trying to access the dashboard to the home page
     if (!token && url.pathname.startsWith('/dashboard')) {
-        return NextResponse.redirect(new URL('/home', request.url));
-    }
+        return NextResponse.redirect(new URL('/sign-in', request.url));
+      }
 
     // Allow all other requests
     return NextResponse.next();

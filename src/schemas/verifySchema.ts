@@ -1,6 +1,5 @@
-import { z } from 'zod';
+import { z } from "zod";
+
 export const verifySchema = z.object({
-    username: z.string(),
-    verificationCode: z.string().length(6), // Example field
-  });
-  
+  code: z.string().length(6, "Verification code must be 6 characters"),
+});
