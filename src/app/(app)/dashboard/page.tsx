@@ -25,7 +25,7 @@ function Dashboard() {
 
   const {toast} = useToast();
 
-  const handleDelete = (messageId: string) => {
+  const handleDeleteMessage = (messageId: string) => {
     setMessages(messages.filter((message)=>message._id !== messageId));
   }
 
@@ -65,7 +65,7 @@ function Dashboard() {
      if (refresh){
       toast({
         title: 'Refreshed messages',
-        description: 'Failed to fetch message settings',
+        description: 'Showing latest Messages',
       });
      }
     }catch(error){
@@ -78,7 +78,6 @@ function Dashboard() {
       setIsloading(false);
       setSwitchLoading(false);
     }   
-
   },[setIsloading, setMessages]);
 
   useEffect(()=>{
@@ -177,7 +176,7 @@ function Dashboard() {
           <RefreshCcw  className="h-4 w-4" />
         )}
       </Button>
-      {/* <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-6">
         {messages.length > 0 ? (
           messages.map((message, index) => (
             <MessageCard
@@ -189,7 +188,7 @@ function Dashboard() {
         ) : (
           <p>No messages to display.</p>
         )}
-      </div> */}
+      </div>
     </div>
   );
 }
