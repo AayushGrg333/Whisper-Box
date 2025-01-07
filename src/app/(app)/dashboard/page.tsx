@@ -1,4 +1,4 @@
-'use client';
+'use client'
 
 import { useToast } from '@/hooks/use-toast';
 import { Message } from '@/models/user';
@@ -10,7 +10,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { acceptMessageSchema } from '@/schemas/acceptMessageSchema';
 import axios,{AxiosError} from 'axios';
 import { ApiResponse } from '@/types/ApiResponse';
-import Router from 'next/router';
+import { useRouter } from 'next/navigation';
 import { Loader2, MoveLeft, RefreshCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -19,6 +19,7 @@ import MessageCard from '@/components/messagecard';
 import { User } from 'next-auth';
 
 function Dashboard() {
+  const Router = useRouter();
   const [messages, setMessages] = useState<Message[]>([]);
   const [isloading,setIsloading] = useState<boolean>(false);
   const [isSwitchLoading, setSwitchLoading] = useState<boolean>(false);

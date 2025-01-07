@@ -7,11 +7,14 @@ import {
     CarouselPrevious,
 } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
+import {MoveRight} from 'lucide-react'
+import { useRouter } from "next/navigation";
 
 import messages from "@/messages.json";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
 export default function Home() {
+    const Router = useRouter()
     return (
       <>
         <main
@@ -47,7 +50,7 @@ export default function Home() {
                                 <Card>
                                   <CardHeader>{message.title}</CardHeader>
                                     <CardContent className="flex aspect-square items-center justify-center p-6">
-                                        <span className="text-xl font-semibold">
+                                        <span className="text-2xl font-semibold">
                                             {message.content}
                                         </span>
                                     </CardContent>
@@ -61,6 +64,13 @@ export default function Home() {
                 <CarouselNext />
             </Carousel>
         </main>
+        <span
+          onClick={() => Router.push("/dashboard")}
+          className="mb-5 text-2xl text-blue-900 flex justify-center items-center group cursor-pointer"
+        >
+        <p className="ml-1 group-hover:underline">Checkout Messages</p>
+          <MoveRight  className="w-6 h-4 transition-transform duration-300 ease-linear group-hover:translate-x-4 " />
+        </span>
         <footer className="text-center">@2025 WhisperBox. All rights reserved.</footer>
         </>
     );
