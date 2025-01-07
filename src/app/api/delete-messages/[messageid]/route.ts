@@ -3,7 +3,6 @@ import { authOptions } from "../../auth/[...nextauth]/options";
 import connectDb from "@/lib/connnectdb";
 import userModel from "@/models/user";
 import { User } from "next-auth";
-import mongoose from "mongoose";
 
 export async function DELETE(request: Request,{params}: {params: {messageid: string}}) {
     const messageId = params.messageid
@@ -23,8 +22,31 @@ export async function DELETE(request: Request,{params}: {params: {messageid: str
         const updatedResult = await userModel.updateOne({_id: user._id},{
             $pull : {messages : { _id : messageId}}
         })
+        if(updatedResult.modifiedCount == 0){
+            return Response.json(
+                {
+                    success: false,
+                    message: "Message not found or already deleted"
+                },
+                {status : 404}
+            )
+        }
+
+        return Response.json(
+        {
+            success: true,
+            message: "Message successfully Deleted"
+        },
+        {status : 200})
     } catch (error) {
-        
+        console.log("Error in delete message route")
+        return Response.json(
+            {
+                success: false,
+                message: "Error deleting message"
+            },
+            {status: 401}
+        )
     }
 
 }
