@@ -11,7 +11,7 @@ import { acceptMessageSchema } from '@/schemas/acceptMessageSchema';
 import axios,{AxiosError} from 'axios';
 import { ApiResponse } from '@/types/ApiResponse';
 import { useRouter } from 'next/navigation';
-import { Loader2, MoveLeft, RefreshCcw } from 'lucide-react';
+import { ChartNoAxesColumnDecreasing, Loader2, MoveLeft, RefreshCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
@@ -43,13 +43,13 @@ function Dashboard() {
   const fetchAcceptMessage = useCallback(async () => {
     setSwitchLoading(true);
     try {
-      const response = await axios.get<ApiResponse>('/api/acceptMessages');
+      const response = await axios.get<ApiResponse>('/api/accept-messages');
       setValue('acceptMessages', response.data.isAcceptingMessages);
     } catch (error) {
       const axiosError = error as AxiosError<ApiResponse>;
       toast({
         title: 'Error',
-        description: axiosError.response?.data.message || 'Failed to fetch message settings',
+        description: axiosError.response?.data.message || 'Failed to fetch message status',
         variant: 'destructive',
       });
     } finally {
@@ -59,9 +59,10 @@ function Dashboard() {
   
   const fetchMessages = useCallback(async (refresh: boolean = false) => {
     setIsloading(true);
-    setSwitchLoading(false);
+    setSwitchLoading(true);
     try{
      const response =  await axios.get<ApiResponse>('/api/get-messages');
+     console.log(response)
      setMessages(response.data.messages || [])
      if (refresh){
       toast({
@@ -72,7 +73,7 @@ function Dashboard() {
     }catch(error){
       toast({
         title: 'Error',
-        description: 'Failed to fetch message settings',
+        description: 'Failed to fetch messages',
         variant: 'destructive',
       });
     } finally {

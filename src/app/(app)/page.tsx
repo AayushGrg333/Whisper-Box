@@ -9,6 +9,7 @@ import {
 import Autoplay from "embla-carousel-autoplay";
 import {MoveRight} from 'lucide-react'
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
 
 import messages from "@/messages.json";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -64,13 +65,18 @@ export default function Home() {
                 <CarouselNext />
             </Carousel>
         </main>
-        <span
+                <div className="flex items-center justify-center mb-10">
+                <Button className="w-[400px] bg-gray-900 flex items-center justify-center">
+            <span
           onClick={() => Router.push("/dashboard")}
-          className="mb-5 text-2xl text-blue-900 flex justify-center items-center group cursor-pointer"
+          className="mb-5 m-5 text-2xl text-white flex justify-center items-center group cursor-pointer"
         >
         <p className="ml-1 group-hover:underline">Checkout Messages</p>
           <MoveRight  className="w-6 h-4 transition-transform duration-300 ease-linear group-hover:translate-x-4 " />
         </span>
+        </Button>
+                </div>
+        
         <footer className="text-center">@2025 WhisperBox. All rights reserved.</footer>
         </>
     );
