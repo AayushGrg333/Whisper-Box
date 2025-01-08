@@ -25,6 +25,7 @@ import { Message } from "@/models/user";
 import { useToast } from "@/hooks/use-toast";
 import { ApiResponse } from "@/types/ApiResponse";
 import axios from "axios";
+import timeAgo from "@/utils/dateconverter";
 
 type MessageCardProp = {
   message: Message;
@@ -41,12 +42,15 @@ const MessageCard = ({message , onMessageDelete } : MessageCardProp) => {
    onMessageDelete(message._id as string);
   }
     return (
-        <Card>
+        <Card >
+            <CardContent className="mt-10">
+                <p className="text-xl">{message.content}</p>
+                <p className="text-md">{timeAgo(message.createdAt.toString())}</p>
+            </CardContent>
             <CardHeader>
-                <CardTitle>Card Title</CardTitle>
                 <AlertDialog>
                     <AlertDialogTrigger asChild>
-                        <Button variant="destructive"><X className="w-5 h-5"/></Button>
+                        <Button className="w-5 h-8 bg-red-600" variant="destructive"><X/></Button>
                     </AlertDialogTrigger>
                     <AlertDialogContent>
                         <AlertDialogHeader>
@@ -64,11 +68,9 @@ const MessageCard = ({message , onMessageDelete } : MessageCardProp) => {
                         </AlertDialogFooter>
                     </AlertDialogContent>
                 </AlertDialog>
-                <CardDescription>Card Description</CardDescription>
+               
             </CardHeader>
-            <CardContent>
-                <p>Card Content</p>
-            </CardContent>
+            
         </Card>
     );
 }

@@ -40,29 +40,29 @@ function Dashboard() {
 
   const acceptMessages = watch('acceptMessages');
 
-  const fetchAcceptMessage = useCallback(async () => {
+  const fetchAcceptMessages = useCallback(async () => {
     setSwitchLoading(true);
     try {
-      const response = await axios.get<ApiResponse>('/api/accept-messages');
-      setValue('acceptMessages', response.data.isAcceptingMessages);
+      const response = await axios.get<ApiResponse>("/api/accept-messages");
+      setValue("acceptMessages", response.data.isAcceptingMessage);
     } catch (error) {
       const axiosError = error as AxiosError<ApiResponse>;
       toast({
-        title: 'Error',
-        description: axiosError.response?.data.message || 'Failed to fetch message status',
-        variant: 'destructive',
+        title: "Error",
+        description: axiosError.response?.data.message,
+        variant: "destructive",
       });
     } finally {
       setSwitchLoading(false);
     }
-  },[setValue])
+  }, [setValue, toast]);
   
   const fetchMessages = useCallback(async (refresh: boolean = false) => {
     setIsloading(true);
     setSwitchLoading(true);
     try{
      const response =  await axios.get<ApiResponse>('/api/get-messages');
-     console.log(response)
+     console.log(response.data)
      setMessages(response.data.messages || [])
      if (refresh){
       toast({
@@ -84,9 +84,9 @@ function Dashboard() {
 
   useEffect(()=>{
     if(!session || !session.user) return 
+    fetchAcceptMessages();
     fetchMessages();
-    fetchAcceptMessage();
-  },[session,setValue,fetchAcceptMessage,fetchMessages]);
+  },[session,setValue,fetchAcceptMessages,fetchMessages]);
 
   //handle switch change
   const handleSwitchChange = async() => {
@@ -178,6 +178,7 @@ function Dashboard() {
           <RefreshCcw  className="h-4 w-4" />
         )}
       </Button>
+      
       <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-6">
         {messages.length > 0 ? (
           messages.map((message, index) => (

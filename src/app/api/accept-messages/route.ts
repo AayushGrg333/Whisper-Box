@@ -9,7 +9,6 @@ export async function POST(request: Request) {
 
     const session  = await getServerSession(authOptions)
     const user:User = session?.user;
-    console.log(session)
 
     if(!session || !session.user){
         return Response.json(
@@ -27,7 +26,7 @@ export async function POST(request: Request) {
     try {
         const updatedUser = await userModel.findByIdAndUpdate(
             userId,{isAcceptingMessage :acceptMessages},
-            {new: true}//returns the updated new value
+            {new: true}
         )
         if (!updatedUser) {
             return Response.json(
@@ -63,9 +62,8 @@ export async function POST(request: Request) {
 export async function GET(request: Request) {
     await connectDb()
 
-    const session  = await getServerSession(authOptions)
-    const user = session?.user;
-
+    const session = await getServerSession(authOptions);
+    const user = session?.user as User;
     if(!session || !session.user){
         return Response.json(
             {
@@ -77,9 +75,8 @@ export async function GET(request: Request) {
     }
 
     const userId = user._id;
-
     try {
-        const foundUser = await userModel.findById({userId})
+        const foundUser = await userModel.findById(userId)
         if (!foundUser) {
             return Response.json(
                 {
@@ -89,16 +86,16 @@ export async function GET(request: Request) {
                 {status: 404}
             )
         }
-        
         return Response.json(
             {
                 success: true,
-                isAcceptingMessages: foundUser.isAcceptingMessage
+                message:"succesfully fetched user status",
+                isAcceptingMessage: foundUser.isAcceptingMessage
             },
-            {status: 401}
+            {status: 200}
         )
     } catch (error) {
-        console.log("Failed to update user status to accept messages")
+        console.log("Failed to update user status ")
         return Response.json(
             {
                 success: false,

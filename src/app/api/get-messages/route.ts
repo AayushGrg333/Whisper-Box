@@ -10,6 +10,7 @@ export async function GET(request: Request) {
 
     const session = await getServerSession(authOptions);
     const user: User = session?.user;
+    
 
     if (!session || !session.user) {
         return Response.json(
@@ -25,20 +26,22 @@ export async function GET(request: Request) {
     try {
         const user = await userModel.aggregate([
             {
-                $match: {
-                    id: userId,
-                },
+              $match: {
+                _id: userId,
+              },
             },
             {
-                $unwind: "$messages",//converts array into a document
+              $unwind: "$messages",
             },
             {
-                $sort : {"messages.createdAt": -1}
+              $sort: {
+                "messages.createdAt": -1,
+              },
             },
             {
-                $group : {_id: "$_id", messages: {$push : "$messages"}}
+              $group : {_id: "$_id", messages: {$push : "$messages"}}
             }
-        ]);
+          ]);
         if(!user || user.length === 0 ){
             return Response.json(
                 {
