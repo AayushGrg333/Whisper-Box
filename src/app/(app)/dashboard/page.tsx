@@ -11,7 +11,7 @@ import { acceptMessageSchema } from '@/schemas/acceptMessageSchema';
 import axios,{AxiosError} from 'axios';
 import { ApiResponse } from '@/types/ApiResponse';
 import { useRouter } from 'next/navigation';
-import { ChartNoAxesColumnDecreasing, Loader2, MoveLeft, RefreshCcw } from 'lucide-react';
+import { Loader2, MoveLeft, RefreshCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
