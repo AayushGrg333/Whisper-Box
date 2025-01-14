@@ -2,7 +2,7 @@
 
 import { messageSchema } from "@/schemas/messageSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React, { useEffect, useState } from "react";
+import React, { useState,useEffect } from "react";
 import { useForm } from "react-hook-form";
 import axios, { AxiosError } from "axios";
 import { ApiResponse } from "@/types/ApiResponse";
@@ -20,11 +20,9 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useDebounceCallback } from "usehooks-ts";
 
 function SendMessage() {
     const [message, setMessage] = useState<string>("");
-    const [messageError, setMessageError] = useState<string | null>(null);
     const [isSendingMessage, setIsSendingMessage] = useState<boolean>(false);
     const [AiSuggestion, setAISuggestion] = useState<string[]>([]);
     const [loadingAiSuggestion, setLoadingAiSuggestion] = useState<boolean>(false);
@@ -41,14 +39,8 @@ function SendMessage() {
             content: "",
         },
     });
-
-    const result = messageSchema.safeParse({ content: message });
-    if (!result.success) {
-        const errorMessage = result.error.errors[0]?.message;
-        setMessageError(errorMessage);
-    } else {
-        setMessageError(null);
-    }
+    
+    
 
     const handleSendMessage = async () => {
         setIsSendingMessage(true);
@@ -60,13 +52,12 @@ function SendMessage() {
                     content: message,
                 }
             );
-            console.log(response.data.message);
             toast({
                 title: "Success",
                 description: response.data.message,
             });
         } catch (error) {
-            console.error("Error during sening message", error);
+            console.error("Error during sending message", error);
             const axiosError = error as AxiosError<ApiResponse>;
 
             let errormessage = axiosError.response?.data.message;
@@ -129,7 +120,7 @@ function SendMessage() {
                                               
                                             />
                                         </FormControl>
-                                        <FormMessage />
+                                        <FormMessage>{form.formState.errors.content?.message}</FormMessage>
                                     </FormItem>
                                 )}
                             />
