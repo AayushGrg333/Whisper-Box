@@ -13,16 +13,15 @@ import { z } from "zod";
 import {
     Form,
     FormControl,
-    FormDescription,
     FormField,
     FormItem,
     FormLabel,
     FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Loader2 } from "lucide-react";
 
 function SendMessage() {
-    const [message, setMessage] = useState<string>("");
     const [isSendingMessage, setIsSendingMessage] = useState<boolean>(false);
     const [AiSuggestion, setAISuggestion] = useState<string[]>([]);
     const [loadingAiSuggestion, setLoadingAiSuggestion] = useState<boolean>(false);
@@ -42,20 +41,21 @@ function SendMessage() {
     
     
 
-    const handleSendMessage = async () => {
+    const handleSendMessage = async (data: z.infer<typeof messageSchema>) => {
         setIsSendingMessage(true);
         try {
             const response = await axios.post<ApiResponse>(
                 "/api/send-message",
                 {
                     username: username,
-                    content: message,
+                    content: data.content,
                 }
             );
             toast({
                 title: "Success",
                 description: response.data.message,
             });
+            form.reset();
         } catch (error) {
             console.error("Error during sending message", error);
             const axiosError = error as AxiosError<ApiResponse>;
@@ -97,8 +97,11 @@ function SendMessage() {
 
     return (
         <>
-            <div className="">
-                <div className="text-3xl">Send Anonymous Message</div>
+            <div className="flex justify-center items-center min-h-screen bg-grey">
+                <div className="w-full max-w-md p-8 space-y-8 bg-white rounded-lg ">
+                <div className="text-center">
+                    <h1 className="text-3xl font-bold trackeing-tight lg:text-4xl">Send Anonymous Message to {username}</h1>
+                </div>
                 <div>
                     <Form {...form}>
                         <form
@@ -124,12 +127,20 @@ function SendMessage() {
                                     </FormItem>
                                 )}
                             />
-                            <Button type="submit">Submit</Button>
+                            <Button type="submit">
+                                {isSendingMessage ? (
+                                    <>
+                                        <Loader2 className="mr-2 h-2 w-4 animate-spin"/>sending...
+                                    </>
+                                ):(
+                                    "send Message"
+                                )}
+                            </Button>
                         </form>
                     </Form>
                 </div>
+                </div>
             </div>
-            <Button onClick={handleSuggestMessage}>getsuggestion</Button>
         </>
     );
 }
