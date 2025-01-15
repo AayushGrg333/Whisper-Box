@@ -3,9 +3,14 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcrypt";
 import connectDb from "@/lib/connnectdb";
 import userModel from "@/models/user";
+// import GoogleProvider from 'next-auth/providers/google'
+// import GithubProvider from 'next-auth/providers/github'
 
 export const authOptions: NextAuthOptions = {
     providers: [
+        // GoogleProvider({
+
+        // }),
         CredentialsProvider({
             id: "credentials",
             name: "Credentials",
