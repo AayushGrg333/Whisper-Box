@@ -184,11 +184,13 @@ function Dashboard() {
         {messages.length > 0 ? (
           messages.map((message, index) => (
             <MessageCard
+              copy={copyToClipboard}
               key={message._id as string}
               message={message}
               onMessageDelete={handleDeleteMessage}
-            />
-          ))
+              />
+            )
+          )
         ) : (
           <p>No messages to display.</p>
         )}
