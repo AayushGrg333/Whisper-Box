@@ -58,7 +58,7 @@ function SendMessage() {
             console.error("Error during sending message", error);
             const axiosError = error as AxiosError<ApiResponse>;
 
-            let errormessage = axiosError.response?.data.message;
+            const errormessage = axiosError.response?.data.message;
 
             toast({
                 title: "failed sending message",
@@ -83,7 +83,7 @@ function SendMessage() {
             } catch (error) {
                 console.error("Error duing getting message suggestion", error);
                 const axiosError = error as AxiosError<ApiResponse>;
-                let errormessage = axiosError.response?.data.message;
+                const errormessage = axiosError.response?.data.message;
                 toast({
                     title: "failed getting message suggestion",
                     description: errormessage,
@@ -94,7 +94,7 @@ function SendMessage() {
             }
         };
         handleSuggestMessage()
-    }, [])
+    }, [toast])
 
     const handleSuggestionClick = (suggestion : string) =>{
         form.setValue("content",suggestion);

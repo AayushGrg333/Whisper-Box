@@ -32,7 +32,7 @@ type MessageCardProp = {
   copy : (text:string)=>void;
 }
 
-const MessageCard = ({ message, copy, onMessageDelete }: MessageCardProp) => {
+const MessageCard = ({ message, onMessageDelete }: MessageCardProp) => {
   const { toast } = useToast();
   const [, copyToClipboard] = useCopyToClipboard();
 

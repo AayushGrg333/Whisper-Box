@@ -71,9 +71,9 @@ function Dashboard() {
         description: 'Showing latest Messages',
       });
      }
-    }catch(error){
+    }catch{
       toast({
-        title: 'Error',
+        title: "Error",
         description: 'Failed to fetch messages',
         variant: 'destructive',
       });
@@ -81,7 +81,7 @@ function Dashboard() {
       setIsloading(false);
       setSwitchLoading(false);
     }   
-  },[setIsloading, setMessages]);
+  },[setIsloading, setMessages,toast]);
 
   useEffect(()=>{
     if(!session || !session.user) return 
@@ -182,7 +182,7 @@ function Dashboard() {
       
       <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-6">
         {messages.length > 0 ? (
-          messages.map((message, index) => (
+          messages.map((message) => (
             <MessageCard
               copy={copyToClipboard}
               key={message._id as string}

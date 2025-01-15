@@ -5,7 +5,7 @@ import userModel from "@/models/user";
 import { User } from "next-auth";
 import mongoose from "mongoose";
 
-export async function GET(request: Request) {
+export async function GET() {
     await connectDb();
 
     const session = await getServerSession(authOptions);
@@ -60,7 +60,7 @@ export async function GET(request: Request) {
             { status: 200 }
         );
     } catch (error) {
-        console.log("Failed to get Messages")
+        console.log("Failed to get Messages",error)
         return Response.json(
             {
                 success: false,
