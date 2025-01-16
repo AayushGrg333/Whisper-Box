@@ -13,7 +13,7 @@ export const authOptions: NextAuthOptions = {
         identifier: { label: "Email or Username", type: "text" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials, req) {
+      async authorize(credentials) {
         if (!credentials?.identifier || !credentials?.password) {
           throw new Error("Please provide all required fields");
         }
@@ -54,9 +54,14 @@ export const authOptions: NextAuthOptions = {
             isVerified: user.isVerified,
             isAcceptingMessage: user.isAcceptingMessage,
           };
-        } catch (error: any) {
-          console.error("Auth error:", error);
-          throw new Error(error.message || "Authentication failed");
+        } catch (error: unknown) {
+          if (error instanceof Error) {
+            console.error("Auth error:", error.message);
+            throw new Error(error.message || "Authentication failed");
+          } else {
+            console.error("Auth error:", error);
+            throw new Error("Authentication failed");
+          }
         }
       },
     }),

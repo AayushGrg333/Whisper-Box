@@ -38,7 +38,7 @@ const MessageCard = ({ message, onMessageDelete }: MessageCardProp) => {
 
   const handleDeleteConfirm = async () => {
     const response = await axios.delete<ApiResponse>(
-      `/api/delete-message/${message._id}`
+      `/api/delete-messages/${message._id}`  // Changed from delete-message to delete-messages
     );
     toast({
       title: response.data.message,
@@ -59,32 +59,32 @@ const MessageCard = ({ message, onMessageDelete }: MessageCardProp) => {
       <CardContent className="mt-10">
         <p className="text-xl">{message.content}</p>
         <p className="text-md">{timeAgo(message.createdAt.toString())}</p>
-        <Button onClick={handleCopy}>Copy</Button>
+        <div className="mt-5 flex justify-between items-center">
+          <Button onClick={handleCopy}>Copy</Button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button className="w-5 h-8 bg-red-600" variant="destructive">
+                <X />
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This action cannot be undone. This will permanently delete this
+                  message.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={handleDeleteConfirm}>
+                  Continue
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </div>
       </CardContent>
-      <CardHeader>
-        <AlertDialog>
-          <AlertDialogTrigger asChild>
-            <Button className="w-5 h-8 bg-red-600" variant="destructive">
-              <X />
-            </Button>
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-              <AlertDialogDescription>
-                This action cannot be undone. This will permanently delete this
-                message.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={handleDeleteConfirm}>
-                Continue
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-      </CardHeader>
     </Card>
   );
 };

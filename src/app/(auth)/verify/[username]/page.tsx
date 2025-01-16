@@ -33,7 +33,6 @@ function VerifyCodePage() {
   });
   
   const onSubmit = async (data: z.infer<typeof verifySchema>) => {
-      console.log(form.getValues());
     setIsSubmitting(true);
     try {
       const response = await axios.post<ApiResponse>('/api/verify-code',{

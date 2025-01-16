@@ -18,6 +18,8 @@ import { Switch } from '@/components/ui/switch';
 import MessageCard from '@/components/messagecard';
 import { User } from 'next-auth';
 
+
+
 function Dashboard() {
   const Router = useRouter();
   const [messages, setMessages] = useState<Message[]>([]);
@@ -31,7 +33,6 @@ function Dashboard() {
   }
 
   const {data : session} = useSession();
-  console.log(session)
 
   const form = useForm({
     resolver : zodResolver(acceptMessageSchema)
@@ -63,8 +64,7 @@ function Dashboard() {
     setSwitchLoading(true);
     try{
      const response =  await axios.get<ApiResponse>('/api/get-messages');
-     console.log(response.data)
-     setMessages(response.data.messages || [])
+     setMessages(response.data?.data?.[0]?.messages || []);
      if (refresh){
       toast({
         title: 'Refreshed messages',

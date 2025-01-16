@@ -4,9 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-
 import * as z from "zod";
-
 import { Button } from "@/components/ui/button";
 import {
     Form,
@@ -17,9 +15,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-
 import { useRouter } from "next/navigation";
-
 import { signInSchema } from "@/schemas/signInSchema";
 import { signIn } from "next-auth/react";
 
@@ -28,7 +24,6 @@ export default function SignInForm() {
     const router = useRouter();
     const { toast } = useToast();
 
-    //zod implementation
     const form = useForm<z.infer<typeof signInSchema>>({
         resolver: zodResolver(signInSchema),
         defaultValues: {
@@ -38,23 +33,41 @@ export default function SignInForm() {
     });
 
     const onSubmit = async (data: z.infer<typeof signInSchema>) => {
-        setIsSubmitting(true);
-        const result = await signIn("credentials", {
-            redirect: false,
-            identifier: data.identifier,
-            password: data.password,
-        });
+        try {
+            setIsSubmitting(true);
+            const result = await signIn("credentials", {
+                redirect: false,
+                identifier: data.identifier,  // Changed from email to identifier
+                password: data.password,
+            });
 
-        if (result?.error) {
+            if (result?.error) {
+                console.error("Sign in error:", result.error);
+                toast({
+                    title: "Login failed",
+                    description: result.error,
+                    variant: "destructive",
+                });
+                return;
+            }
+
+            if (result?.ok) {
+                toast({
+                    title: "Success",
+                    description: "Logged in successfully",
+                });
+                router.replace("/dashboard");
+                router.refresh();
+            }
+        } catch (error) {
+            console.error("Sign in error:", error);
             toast({
-                title: "Login failed",
-                description: "Incorrect username or password",
+                title: "Error",
+                description: "An unexpected error occurred",
                 variant: "destructive",
             });
-        }
-        setIsSubmitting(false);
-        if (result?.url) {
-            router.replace("/dashboard");
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -79,10 +92,14 @@ export default function SignInForm() {
                             control={form.control}
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Email/username</FormLabel>
-                                    <Input {...field} name="email/username" />
+                                    <FormLabel>Email or Username</FormLabel>
+                                    <Input 
+                                        {...field} 
+                                        name="identifier"
+                                        placeholder="Enter your email or username"
+                                    />
                                     <p className="text-muted text-gray-400 text-sm">
-                                        We will send you a verification code
+                                        Enter your registered email or username
                                     </p>
                                     <FormMessage />
                                 </FormItem>
@@ -99,6 +116,7 @@ export default function SignInForm() {
                                         type="password"
                                         {...field}
                                         name="password"
+                                        placeholder="Enter your password"
                                     />
                                     <FormMessage />
                                 </FormItem>
@@ -109,13 +127,13 @@ export default function SignInForm() {
                             className="w-full"
                             disabled={isSubmitting}
                         >
-                            Sign In
+                            {isSubmitting ? "Signing in..." : "Sign In"}
                         </Button>
                     </form>
                 </Form>
                 <div className="text-center mt-4">
                     <p>
-                        haven&apos;t registered yet?{" "}
+                        Haven&apos;t registered yet?{" "}
                         <Link
                             href="/sign-up"
                             className="text-blue-600 hover:text-blue-800"
