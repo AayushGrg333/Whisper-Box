@@ -28,9 +28,7 @@ export async function DELETE(
   const userId = new mongoose.Types.ObjectId(user._id); //convert string into objectid
   try {
     const updatedResult = await userModel.updateOne(
-      {
-        _id: userId,
-      },
+      { _id: userId },
       {
         $pull: { messages: { _id: messageid } },
       }
@@ -54,6 +52,7 @@ export async function DELETE(
       { status: 200, headers: { "Content-Type": "application/json" } }
     );
   } catch (error) {
+    console.error("Error deleting message:", error);   
     return new Response(
       JSON.stringify({
         success: false,
