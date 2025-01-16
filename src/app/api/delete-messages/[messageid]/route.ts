@@ -1,19 +1,27 @@
+import { NextRequest } from "next/server";
 import { getServerSession } from "next-auth/next";
-import { User } from "next-auth";
 import { authOptions } from "../../auth/[...nextauth]/options";
-import connectDb from "@/lib/connnectdb";
 import userModel from "@/models/user";
+import connectDb from "@/lib/connnectdb";
+import mongoose from "mongoose";
+
+interface RouteContext {
+  params: {
+    messageid: string;
+    [key: string]: string | string[];
+  };
+}
 
 export async function DELETE(
-  request: Request,
-  { params }: { params: { messageid: string } }
+  // request: NextRequest,
+  { params }: RouteContext
 ) {
-  const messageId = params.messageid;
+  const { messageid } = params;
 
-  connectDb();
+  await connectDb();
 
   const session = await getServerSession(authOptions);
-  const user: User = session?.user as User;
+  const user = session?.user;
 
   if (!session || !user) {
     return Response.json(
@@ -25,13 +33,13 @@ export async function DELETE(
     );
   }
 
+  const userId = new mongoose.Types.ObjectId(user._id);
+  
   try {
     const updatedResult = await userModel.updateOne(
+      { _id: userId },
       {
-        _id: user._id,
-      },
-      {
-        $pull: { messages: { _id: messageId } },
+        $pull: { messages: { _id: messageid } },
       }
     );
 
@@ -53,7 +61,7 @@ export async function DELETE(
       { status: 200 }
     );
   } catch (error) {
-    console.log("Error deleting message", error);
+    console.error("Error deleting message:", error);   
     return Response.json(
       {
         success: false,
