@@ -18,9 +18,11 @@ import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { signInSchema } from "@/schemas/signInSchema";
 import { signIn } from "next-auth/react";
+import { Loader2 } from "lucide-react";
 
 export default function SignInForm() {
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isGoogleSubmitting, setIsGoogleSubmitting] = useState(false);
     const router = useRouter();
     const { toast } = useToast();
 
@@ -31,6 +33,23 @@ export default function SignInForm() {
             password: "",
         },
     });
+
+    const onClickGoogle = async () => {
+        setIsGoogleSubmitting(true);
+        const result = await signIn("google", {
+          callbackUrl: "/dashboard",
+        });
+    
+        setIsGoogleSubmitting(false);
+    
+        if (result?.error) {
+          toast({
+            title: "Error",
+            description: result.error,
+            variant: "destructive",
+          });
+        }
+      };
 
     const onSubmit = async (data: z.infer<typeof signInSchema>) => {
         try {
@@ -142,7 +161,24 @@ export default function SignInForm() {
                         </Link>
                     </p>
                 </div>
+                
+        <div>
+          <p className="text-sm text-gray-500 text-center">Or</p>
+        </div>
+        <div>
+          <Button className="w-full" onClick={onClickGoogle}>
+            {isGoogleSubmitting ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              </>
+            ) : (
+              "Sign in with Google"
+            )}
+          </Button>
+        </div>
             </div>
+
+            
         </div>
     );
 }
