@@ -12,7 +12,6 @@ interface RouteContext {
 }
 
 export async function DELETE(
-  // request: NextRequest,
   { params }: RouteContext
 ) {
   const { messageid } = params;

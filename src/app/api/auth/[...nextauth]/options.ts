@@ -4,99 +4,100 @@ import bcrypt from "bcrypt";
 import connectDb from "@/lib/connnectdb";
 import userModel from "@/models/user";
 
-// Define the User type that matches NextAuth's expectations
-interface User {
-  id: string;
-  _id: string;
-  email: string;
-  username: string;
-  isVerified: boolean;
-  isAcceptingMessage: boolean;
-}
-
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
       id: "credentials",
       name: "Credentials",
       credentials: {
-        email: { label: "Email", type: "text" },
+        identifier: { label: "Email or Username", type: "text" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials): Promise<User | null> {
-        if (!credentials) {
-          throw new Error("No credentials provided");
+      async authorize(credentials, req) {
+        if (!credentials?.identifier || !credentials?.password) {
+          throw new Error("Please provide all required fields");
         }
 
-        await connectDb();
-
         try {
-          const user = await userModel
-            .findOne({
-              $or: [
-                { email: credentials.email },
-                { username: credentials.email }
-              ],
-            })
-            .lean();
+          await connectDb();
+
+          const user = await userModel.findOne({
+            $or: [
+              { email: credentials.identifier.toLowerCase() },
+              { username: credentials.identifier.toLowerCase() }
+            ],
+          }).lean();
 
           if (!user) {
-            throw new Error("No user found with this email");
+            throw new Error("No account found with this email or username");
           }
 
           if (!user.isVerified) {
-            throw new Error("Please verify your account first");
+            throw new Error("Please verify your email before signing in");
           }
 
-          const isPasswordCorrect = await bcrypt.compare(
+          const passwordMatch = await bcrypt.compare(
             credentials.password,
             user.password
           );
 
-          if (isPasswordCorrect) {
-            return {
-              id: user._id.toString(), 
-              _id: user._id.toString(),
-              email: user.email,
-              username: user.username,
-              isVerified: user.isVerified,
-              isAcceptingMessage: user.isAcceptingMessage,
-            };
-          } else {
-            throw new Error("Incorrect Password");
+          if (!passwordMatch) {
+            throw new Error("Invalid password");
           }
-        } catch (error) {
-          console.error("Error during authorization:", error);
-          throw error;
+
+          // Return only the necessary user data
+          return {
+            id: user._id.toString(),
+            _id: user._id.toString(),
+            email: user.email,
+            username: user.username,
+            isVerified: user.isVerified,
+            isAcceptingMessage: user.isAcceptingMessage,
+          };
+        } catch (error: any) {
+          console.error("Auth error:", error);
+          throw new Error(error.message || "Authentication failed");
         }
       },
     }),
   ],
   pages: {
     signIn: "/sign-in",
+    error: "/auth/error",
   },
   session: {
     strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60, // 30 days
   },
-  secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
       if (user) {
+        token.id = user.id;
         token._id = user._id;
+        token.email = user.email;
+        token.username = user.username;
         token.isVerified = user.isVerified;
         token.isAcceptingMessage = user.isAcceptingMessage;
-        token.username = user.username;
       }
+
+      // Handle user updates
+      if (trigger === "update" && session) {
+        return { ...token, ...session.user };
+      }
+
       return token;
     },
     async session({ session, token }) {
-      if (token) {
-        session.user._id = token._id;
-        session.user.isVerified = token.isVerified;
-        session.user.isAcceptingMessage = token.isAcceptingMessage;
-        session.user.username = token.username;
+      if (session.user) {
+        session.user.id = token.id as string;
+        session.user._id = token._id as string;
+        session.user.email = token.email as string;
+        session.user.username = token.username as string;
+        session.user.isVerified = token.isVerified as boolean;
+        session.user.isAcceptingMessage = token.isAcceptingMessage as boolean;
       }
       return session;
-    },
+    }
   },
+  secret: process.env.NEXTAUTH_SECRET,
 };

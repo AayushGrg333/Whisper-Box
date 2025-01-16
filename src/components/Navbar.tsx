@@ -27,7 +27,7 @@ function Navbar() {
             </Button>
           </>
         ) : (
-          <Link href="/signin">
+          <Link href="/sign-in">
             <Button
               className="w-full md:w-auto bg-slate-100 text-black"
               variant="outline"
