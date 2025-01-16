@@ -37,7 +37,7 @@ export default function SignInForm() {
     const onClickGoogle = async () => {
         setIsGoogleSubmitting(true);
         const result = await signIn("google", {
-          callbackUrl: "/dashboard",
+          callbackUrl: `${window.location.origin}/dashboard`,
         });
     
         setIsGoogleSubmitting(false);
