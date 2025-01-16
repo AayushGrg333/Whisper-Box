@@ -2,24 +2,29 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]/options";
 import connectDb from "@/lib/connnectdb";
 import userModel from "@/models/user";
-import { User } from "next-auth"
+
+// Define a custom type for the session user
+interface CustomUser {
+  id: string;
+  _id: string;
+  email: string;
+  username: string;
+  isVerified: boolean;
+  isAcceptingMessage: boolean;
+}
 
 export async function POST(request: Request) {
-    await connectDb()
+    await connectDb();
 
-    const session  = await getServerSession(authOptions)
-    const user:User = session?.user;
-
-    if(!session || !session.user){
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user) {
         return Response.json(
-            {
-                success: false,
-                message: "Not Authenticated"
-            },
-            {status: 401}
-        )
+            { success: false, message: "Not Authenticated" },
+            { status: 401 }
+        );
     }
 
+    const user = session.user as CustomUser;
     const userId = user._id;
     const { acceptMessages } = await request.json()
 
@@ -63,17 +68,14 @@ export async function GET() {
     await connectDb()
 
     const session = await getServerSession(authOptions);
-    const user = session?.user as User;
-    if(!session || !session.user){
+    if (!session || !session.user) {
         return Response.json(
-            {
-                success: false,
-                message: "Not Authenticated"
-            },
-            {status: 401}
-        )
+            { success: false, message: "Not Authenticated" },
+            { status: 401 }
+        );
     }
 
+    const user = session.user as CustomUser;
     const userId = user._id;
     try {
         const foundUser = await userModel.findById(userId)
