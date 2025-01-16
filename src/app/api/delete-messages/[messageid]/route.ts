@@ -1,3 +1,4 @@
+import { NextRequest } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../../auth/[...nextauth]/options";
 import userModel from "@/models/user";
@@ -5,7 +6,7 @@ import connectDb from "@/lib/connnectdb";
 import mongoose from "mongoose";
 
 export async function DELETE(
-  request: Request,
+  request: NextRequest,
   { params }: { params: { messageid: string } }
 ) {
   const { messageid } = params;
@@ -16,16 +17,17 @@ export async function DELETE(
   const user = session?.user;
 
   if (!session || !user) {
-    return new Response(
-      JSON.stringify({
+    return Response.json(
+      {
         success: false,
         message: "Not Authenticated",
-      }),
-      { status: 401, headers: { "Content-Type": "application/json" } }
+      },
+      { status: 401 }
     );
   }
 
-  const userId = new mongoose.Types.ObjectId(user._id); //convert string into objectid
+  const userId = new mongoose.Types.ObjectId(user._id);
+  
   try {
     const updatedResult = await userModel.updateOne(
       { _id: userId },
@@ -35,30 +37,30 @@ export async function DELETE(
     );
 
     if (updatedResult.modifiedCount == 0) {
-      return new Response(
-        JSON.stringify({
+      return Response.json(
+        {
           success: false,
           message: "Message not found or already deleted",
-        }),
-        { status: 404, headers: { "Content-Type": "application/json" } }
+        },
+        { status: 404 }
       );
     }
 
-    return new Response(
-      JSON.stringify({
+    return Response.json(
+      {
         success: true,
         message: "Message Deleted Successfully",
-      }),
-      { status: 200, headers: { "Content-Type": "application/json" } }
+      },
+      { status: 200 }
     );
   } catch (error) {
     console.error("Error deleting message:", error);   
-    return new Response(
-      JSON.stringify({
+    return Response.json(
+      {
         success: false,
         message: "Error deleting message",
-      }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
+      },
+      { status: 500 }
     );
   }
 }
