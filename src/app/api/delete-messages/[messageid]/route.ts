@@ -1,5 +1,4 @@
 import { getServerSession } from "next-auth/next";
-import { User } from "next-auth";
 import { authOptions } from "../../auth/[...nextauth]/options";
 import userModel from "@/models/user";
 import connectDb from "@/lib/connnectdb";
@@ -13,7 +12,7 @@ export async function DELETE(
   connectDb();
 
   const session = await getServerSession(authOptions);
-  const user: User = session?.user as User;
+  const user = session?.user;
 
   if (!session || !user) {
     return Response.json(

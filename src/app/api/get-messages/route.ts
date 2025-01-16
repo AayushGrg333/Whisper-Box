@@ -2,29 +2,27 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]/options";
 import connectDb from "@/lib/connnectdb";
 import userModel from "@/models/user";
-import { User } from "next-auth";
 import mongoose from "mongoose";
 
 export async function GET() {
     await connectDb();
 
     const session = await getServerSession(authOptions);
-    const user: User = session?.user;
-    
+    const user = session?.user;
 
-    if (!session || !session.user) {
-        return Response.json(
-            {
+    if (!session || !user) {
+        return new Response(
+            JSON.stringify({
                 success: false,
                 message: "Not Authenticated",
-            },
-            { status: 401 }
+            }),
+            { status: 401, headers: { "Content-Type": "application/json" } }
         );
     }
 
-    const userId = new mongoose.Types.ObjectId(user._id); //convert string into objectid
+    const userId = new mongoose.Types.ObjectId(user._id); 
     try {
-        const user = await userModel.aggregate([
+        const userData = await userModel.aggregate([
             {
               $match: {
                 _id: userId,
@@ -42,31 +40,21 @@ export async function GET() {
               $group : {_id: "$_id", messages: {$push : "$messages"}}
             }
           ]);
-        if(!user || user.length === 0 ){
-            return Response.json(
-                {
-                    success: false,
-                    message: "User not found",
-                },
-                { status: 401 }
-            );
-        }
 
-        return Response.json(
-            {
+        return new Response(
+            JSON.stringify({
                 success: true,
-                messages: user[0].messages,// send messages data
-            },
-            { status: 200 }
+                data: userData,
+            }),
+            { status: 200, headers: { "Content-Type": "application/json" } }
         );
     } catch (error) {
-        console.log("Failed to get Messages",error)
-        return Response.json(
-            {
+        return new Response(
+            JSON.stringify({
                 success: false,
-                message: "Failed to get Messages"
-            },
-            {status: 500}
-        )
+                message: "Error fetching user data",
+            }),
+            { status: 500, headers: { "Content-Type": "application/json" } }
+        );
     }
 }
